@@ -10,44 +10,72 @@ import javafx.stage.Stage;
 public class DashboardPage {
 
     public static Scene getScene(Stage stage, Scene previousScene) {
-        VBox root = new VBox(20);
-        root.setAlignment(Pos.TOP_CENTER);
-        root.setPadding(new Insets(20));
 
-        // ---------------- Back Button ----------------
-        Button backBtn = new Button("< Back");
-        backBtn.setStyle("-fx-background-color: transparent; -fx-font-size: 14px;");
+        // Main centered column
+        VBox contentRoot = new VBox(20);
+        contentRoot.setAlignment(Pos.TOP_CENTER);
+        contentRoot.setPadding(new Insets(20));
+
+        // ============================================================
+        // SIDE MENU
+        // ============================================================
+        VBox sideMenu = new VBox(15);
+        sideMenu.setPadding(new Insets(20));
+        sideMenu.setAlignment(Pos.TOP_LEFT);
+        sideMenu.setStyle("-fx-background-color: #e8e8e8;");
+        sideMenu.setPrefWidth(200);
+        sideMenu.setVisible(false);
+
+        Button menu1 = new Button("Home");
+        Button menu2 = new Button("Profile");
+        Button menu3 = new Button("Shuttle");
+        Button menu4 = new Button("Settings");
+        Button menu5 = new Button("Logout");
+
+        for (Button b : new Button[]{menu1, menu2, menu3, menu4, menu5}) {
+            b.setMaxWidth(Double.MAX_VALUE);
+            b.setStyle("-fx-background-color: transparent; -fx-font-size: 16px;");
+        }
+
+        sideMenu.getChildren().addAll(menu1, menu2, menu3, menu4, menu5);
+
+        // ============================================================
+        // HEADER
+        // ============================================================
+        Button hamburgerBtn = new Button("☰");
+        hamburgerBtn.setStyle("-fx-background-color: transparent; -fx-font-size: 22px; -fx-cursor: hand;");
+        hamburgerBtn.setOnAction(e -> sideMenu.setVisible(!sideMenu.isVisible()));
+
+        Button backBtn = new Button("<");
+        backBtn.setStyle("-fx-background-color: transparent; -fx-font-size: 25px;");
         if (previousScene != null) backBtn.setOnAction(e -> stage.setScene(previousScene));
 
-        // ---------------- Top-right buttons container ----------------
-        HBox topRightBox = new HBox(10);
-        topRightBox.setAlignment(Pos.TOP_RIGHT);
+        HBox topLeftBox = new HBox(10, hamburgerBtn, backBtn);
+        topLeftBox.setAlignment(Pos.CENTER_LEFT);
+        topLeftBox.setPadding(new Insets(10));
 
-        // ---------------- Settings Icon ----------------
+        // Right: Settings + Logout
+        HBox topRightBox = new HBox(10);
+        topRightBox.setAlignment(Pos.CENTER_RIGHT);
+        topRightBox.setPadding(new Insets(10));
+
         ImageView settingsIcon = null;
         try {
-            Image img = new Image("/settingsicon.png");
-            settingsIcon = new ImageView(img);
+            settingsIcon = new ImageView(new Image("/settingsicon.png"));
             settingsIcon.setFitHeight(25);
             settingsIcon.setPreserveRatio(true);
-        } catch (Exception e) {
-            System.out.println("Could not load settings icon.");
-        }
+        } catch (Exception ignored) {}
 
         Button settingsBtn = new Button();
         if (settingsIcon != null) settingsBtn.setGraphic(settingsIcon);
         settingsBtn.setStyle("-fx-background-color: transparent;");
 
-        // ---------------- Logout Icon ----------------
         ImageView logoutIcon = null;
         try {
-            Image img = new Image("/logouticon.png");
-            logoutIcon = new ImageView(img);
+            logoutIcon = new ImageView(new Image("/logouticon.png"));
             logoutIcon.setFitHeight(25);
             logoutIcon.setPreserveRatio(true);
-        } catch (Exception e) {
-            System.out.println("Could not load logout icon.");
-        }
+        } catch (Exception ignored) {}
 
         Button logoutBtn = new Button();
         if (logoutIcon != null) logoutBtn.setGraphic(logoutIcon);
@@ -56,38 +84,34 @@ public class DashboardPage {
 
         topRightBox.getChildren().addAll(settingsBtn, logoutBtn);
 
-        // ---------------- Header ----------------
-        StackPane header = new StackPane();
+        BorderPane header = new BorderPane();
+        header.setLeft(topLeftBox);
+        header.setRight(topRightBox);
         header.setPrefHeight(60);
 
-        HBox backBox = new HBox(backBtn);
-        backBox.setAlignment(Pos.TOP_LEFT);
-        StackPane.setAlignment(backBox, Pos.TOP_LEFT);
+        contentRoot.getChildren().add(header);
 
-        StackPane.setAlignment(topRightBox, Pos.TOP_RIGHT);
-        header.getChildren().addAll(backBox, topRightBox);
-
-        // ---------------- Logo ----------------
+        // ============================================================
+        // LOGO + WELCOME
+        // ============================================================
         ImageView logoView = null;
         try {
-            Image logo = new Image("/ramify_logo.png");
-            logoView = new ImageView(logo);
+            logoView = new ImageView(new Image("/ramify_logo.png"));
             logoView.setFitWidth(200);
             logoView.setPreserveRatio(true);
-        } catch (Exception e) {
-            System.out.println("Could not load logo.");
-        }
+        } catch (Exception ignored) {}
 
         Label welcomeLabel = new Label("Welcome to Ramify FSC");
         welcomeLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
 
-        root.getChildren().add(header);
-        if (logoView != null) root.getChildren().add(logoView);
-        root.getChildren().add(welcomeLabel);
+        if (logoView != null) contentRoot.getChildren().add(logoView);
+        contentRoot.getChildren().add(welcomeLabel);
 
-        // ================= DASHBOARD =================
+        // ============================================================
+        // DASHBOARD CONTENT
+        // ============================================================
 
-        // ---------------- Search Bar ----------------
+        // Search centered
         HBox searchBox = new HBox();
         searchBox.setAlignment(Pos.CENTER);
 
@@ -97,16 +121,14 @@ public class DashboardPage {
         searchField.setStyle("-fx-background-radius: 20; -fx-padding: 8 15;");
         searchBox.getChildren().add(searchField);
 
-        // ---------------- Upcoming Events (IMAGE) ----------------
+        // Upcoming centered
         Label upcomingLabel = new Label("Upcoming Events");
         upcomingLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
         ImageView flyerImage = new ImageView();
         try {
             flyerImage.setImage(new Image("/Ramchella.png"));
-        } catch (Exception e) {
-            System.out.println("Could not load flyer image.");
-        }
+        } catch (Exception ignored) {}
 
         flyerImage.setFitWidth(380);
         flyerImage.setFitHeight(120);
@@ -123,21 +145,21 @@ public class DashboardPage {
                 -fx-background-radius: 20;
         """);
 
-        flyerButton.setOnAction(e ->
-                System.out.println("Ramchella flyer clicked")
-        );
-
         VBox upcomingBox = new VBox(10, upcomingLabel, flyerButton);
         upcomingBox.setAlignment(Pos.CENTER);
 
-        // ---------------- Clubs For You ----------------
+        // Clubs section centered
         HBox clubsHeader = new HBox();
+        clubsHeader.setAlignment(Pos.CENTER);
+        clubsHeader.setSpacing(160);
+
         Label clubsLabel = new Label("Clubs For You");
         clubsLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
         Button viewMoreBtn = new Button("View More →");
         viewMoreBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: green;");
+
         clubsHeader.getChildren().addAll(clubsLabel, viewMoreBtn);
-        clubsHeader.setSpacing(160);
 
         HBox clubsRow = new HBox(25);
         clubsRow.setAlignment(Pos.CENTER);
@@ -149,8 +171,8 @@ public class DashboardPage {
         };
 
         String[] clubNames = {
-                "Cooks & Crooks",
-                "Cricket Club",
+                "Cooks 'N' Crooks",
+                "Farmingdale Cricket Club",
                 "Esports Club"
         };
 
@@ -158,7 +180,6 @@ public class DashboardPage {
             ImageView clubImage = new ImageView(new Image(clubImages[i]));
             clubImage.setFitWidth(80);
             clubImage.setFitHeight(80);
-            clubImage.setPreserveRatio(true);
 
             Button clubBtn = new Button();
             clubBtn.setGraphic(clubImage);
@@ -171,27 +192,27 @@ public class DashboardPage {
                     -fx-border-radius: 45;
             """);
 
-            int index = i;
-            clubBtn.setOnAction(e -> System.out.println(clubNames[index] + " clicked"));
-
-            VBox clubBox = new VBox(5);
+            VBox clubBox = new VBox(5,
+                    clubBtn,
+                    new Label(clubNames[i]),
+                    new Button("See Details")
+            );
             clubBox.setAlignment(Pos.CENTER);
+            ((Button) clubBox.getChildren().get(2))
+                    .setStyle("-fx-background-color: transparent; -fx-text-fill: green;");
 
-            Label nameLabel = new Label(clubNames[i]);
-            Button detailsBtn = new Button("See Details");
-            detailsBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: green;");
-
-            clubBox.getChildren().addAll(clubBtn, nameLabel, detailsBtn);
             clubsRow.getChildren().add(clubBox);
         }
 
         VBox clubsSection = new VBox(10, clubsHeader, clubsRow);
+        clubsSection.setAlignment(Pos.CENTER);
 
-        // ---------------- YOU MAY LIKE ----------------
+        // You may like centered
         Label likeLabel = new Label("You May Like");
         likeLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
         VBox likeList = new VBox(15);
+        likeList.setAlignment(Pos.CENTER);
 
         String[] eventNames = {
                 "Winter Tournament @ 3-6 PM on 12/1",
@@ -209,41 +230,46 @@ public class DashboardPage {
         };
 
         for (int i = 0; i < 2; i++) {
-            HBox eventRow = new HBox(15);
-
             ImageView eventImg = new ImageView(new Image(eventImages[i]));
             eventImg.setFitWidth(70);
             eventImg.setFitHeight(70);
-            eventImg.setPreserveRatio(true);
 
-            VBox eventInfo = new VBox(5);
-            Label eventName = new Label(eventNames[i]);
-            eventName.setStyle("-fx-font-weight: bold;");
-            Label clubName = new Label(eventClubs[i]);
+            Label eventLabel = new Label(eventNames[i]);
+            eventLabel.setStyle("-fx-font-weight: bold;");
 
-            Button detailsBtn = new Button("> See Details");
-            detailsBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: green;");
-            int index = i;
-            detailsBtn.setOnAction(e ->
-                    System.out.println(eventNames[index] + " clicked")
-            );
+            Label clubLabel = new Label(eventClubs[i]);
 
-            eventInfo.getChildren().addAll(eventName, clubName, detailsBtn);
-            eventRow.getChildren().addAll(eventImg, eventInfo);
+            Button detailBtn = new Button("> See Details");
+            detailBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: green;");
+
+            VBox textCol = new VBox(5, eventLabel, clubLabel, detailBtn);
+            textCol.setAlignment(Pos.CENTER_LEFT);
+
+            HBox eventRow = new HBox(15, eventImg, textCol);
+            eventRow.setAlignment(Pos.CENTER);
+
             likeList.getChildren().add(eventRow);
         }
 
-        VBox dashboardSection = new VBox(20);
-        dashboardSection.getChildren().addAll(
+        // All dashboard content in one centered column
+        VBox dashboardSection = new VBox(20,
                 searchBox,
                 upcomingBox,
                 clubsSection,
                 likeLabel,
                 likeList
         );
+        dashboardSection.setAlignment(Pos.CENTER);
 
-        root.getChildren().add(dashboardSection);
+        contentRoot.getChildren().add(dashboardSection);
 
-        return new Scene(root, 450, 650);
+        // ============================================================
+        // FINAL LAYOUT
+        // ============================================================
+        BorderPane layout = new BorderPane();
+        layout.setLeft(sideMenu);
+        layout.setCenter(contentRoot);
+
+        return new Scene(layout, 450, 650);
     }
 }

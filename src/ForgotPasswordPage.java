@@ -16,7 +16,7 @@ public class ForgotPasswordPage {
         root.setPadding(new Insets(20));
 
         // ---------------- Back Button ----------------
-        Button backBtn = new Button("< Back");
+        Button backBtn = new Button("<");
         backBtn.setStyle("-fx-background-color: transparent; -fx-font-size: 14px;");
         backBtn.setOnAction(e -> stage.setScene(previousScene));
 
