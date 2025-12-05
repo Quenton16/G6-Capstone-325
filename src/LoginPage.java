@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,7 +14,6 @@ public class LoginPage extends Application {
 
     @Override
     public void start(Stage stage) {
-        // Main login page has no previous page, pass null
         stage.setScene(getScene(stage, null));
         stage.setTitle("Ramify FSC Login");
         stage.show();
@@ -47,26 +47,64 @@ public class LoginPage extends Application {
         passwordField.setPromptText("Password");
 
         Hyperlink forgotPass = new Hyperlink("Forgot Password?");
-        forgotPass.setOnAction(e -> stage.setScene(ForgotPasswordPage.getScene(stage, stage.getScene())));
+        forgotPass.setOnAction(e ->
+                stage.setScene(ForgotPasswordPage.getScene(stage, stage.getScene()))
+        );
 
         // ---------------- Log In Button ----------------
         Button loginBtn = new Button("Log In");
         loginBtn.setPrefWidth(200);
         loginBtn.setStyle("-fx-background-color: #006633; -fx-text-fill: white;");
+
         loginBtn.setOnAction(e -> {
-            if (usernameField.getText().isEmpty() || passwordField.getText().isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Please enter username and password.", ButtonType.OK);
-                alert.showAndWait();
-            } else {
-                stage.setScene(DashboardPage.getScene(stage, stage.getScene()));
+            String email = usernameField.getText().trim();
+            String pass = passwordField.getText().trim();
+
+            if (email.isEmpty() || pass.isEmpty()) {
+                new Alert(Alert.AlertType.WARNING,
+                        "Please enter username and password.",
+                        ButtonType.OK).showAndWait();
+                return;
             }
+
+            loginBtn.setDisable(true);
+
+            Task<Boolean> loginTask = new Task<>() {
+                @Override
+                protected Boolean call() throws Exception {
+                    return FirebaseAuthService.login(email, pass);
+                }
+            };
+
+            loginTask.setOnSucceeded(ev -> {
+                loginBtn.setDisable(false);
+
+                if (loginTask.getValue()) {
+                    stage.setScene(DashboardPage.getScene(stage, stage.getScene()));
+                } else {
+                    new Alert(Alert.AlertType.ERROR,
+                            "Invalid email or password.",
+                            ButtonType.OK).showAndWait();
+                }
+            });
+
+            loginTask.setOnFailed(ev -> {
+                loginBtn.setDisable(false);
+                new Alert(Alert.AlertType.ERROR,
+                        "Error contacting Firebase.",
+                        ButtonType.OK).showAndWait();
+            });
+
+            new Thread(loginTask).start();
         });
 
         // ---------------- Register Button ----------------
         Button registerBtn = new Button("Register");
         registerBtn.setPrefWidth(200);
         registerBtn.setStyle("-fx-background-color: #004d26; -fx-text-fill: white;");
-        registerBtn.setOnAction(e -> stage.setScene(RegisterPage.getScene(stage, stage.getScene())));
+        registerBtn.setOnAction(e ->
+                stage.setScene(RegisterPage.getScene(stage, stage.getScene()))
+        );
 
         // ---------------- Google Sign-In ----------------
         ImageView googleIcon = null;
@@ -84,8 +122,15 @@ public class LoginPage extends Application {
             googleBtn.setGraphic(googleIcon);
             googleBtn.setContentDisplay(ContentDisplay.LEFT);
         }
-        googleBtn.setStyle("-fx-background-color: white; -fx-border-color: #dcdcdc; -fx-text-fill: #4285F4; -fx-font-weight: bold;");
-        googleBtn.setOnAction(e -> stage.setScene(GoogleLogin.getScene(stage, stage.getScene())));
+        googleBtn.setStyle(
+                "-fx-background-color: white;" +
+                        "-fx-border-color: #dcdcdc;" +
+                        "-fx-text-fill: #4285F4;" +
+                        "-fx-font-weight: bold;"
+        );
+        googleBtn.setOnAction(e ->
+                stage.setScene(GoogleLogin.getScene(stage, stage.getScene()))
+        );
 
         HBox googleBox = new HBox(googleBtn);
         googleBox.setAlignment(Pos.CENTER);
@@ -93,7 +138,15 @@ public class LoginPage extends Application {
         // ---------------- Add all elements ----------------
         if (logoView != null) root.getChildren().add(logoView);
 
-        root.getChildren().addAll(titleLabel, usernameField, passwordField, forgotPass, loginBtn, registerBtn, googleBox);
+        root.getChildren().addAll(
+                titleLabel,
+                usernameField,
+                passwordField,
+                forgotPass,
+                loginBtn,
+                registerBtn,
+                googleBox
+        );
 
         return new Scene(root, 380, 580);
     }
@@ -102,4 +155,3 @@ public class LoginPage extends Application {
         launch(args);
     }
 }
-
