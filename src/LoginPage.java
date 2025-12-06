@@ -14,7 +14,8 @@ public class LoginPage extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage.setScene(getScene(stage, null));
+        Scene scene = getScene(stage, null);
+        stage.setScene(scene);
         stage.setTitle("Ramify FSC Login");
         stage.show();
     }
@@ -22,14 +23,15 @@ public class LoginPage extends Application {
     public static Scene getScene(Stage stage, Scene previousScene) {
         VBox root = new VBox(15);
         root.setAlignment(Pos.TOP_CENTER);
-        root.setPadding(new Insets(20));
+        root.setPadding(new Insets(30, 24, 24, 24));
+        root.getStyleClass().add("login-root");
 
         // ---------------- Logo ----------------
         ImageView logoView = null;
         try {
             Image logo = new Image("/ramify_logo.png");
             logoView = new ImageView(logo);
-            logoView.setFitWidth(280);
+            logoView.setFitWidth(220);
             logoView.setPreserveRatio(true);
         } catch (Exception e) {
             System.out.println("Could not load logo.");
@@ -37,24 +39,27 @@ public class LoginPage extends Application {
 
         // ---------------- Title ----------------
         Label titleLabel = new Label("Welcome to Ramify FSC");
-        titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+        titleLabel.getStyleClass().add("login-title");
 
         // ---------------- Username & Password ----------------
         TextField usernameField = new TextField();
         usernameField.setPromptText("Username or FSC Email");
+        usernameField.getStyleClass().add("ramify-field");
 
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
+        passwordField.getStyleClass().add("ramify-field");
 
         Hyperlink forgotPass = new Hyperlink("Forgot Password?");
+        forgotPass.getStyleClass().add("forgot-link");
         forgotPass.setOnAction(e ->
                 stage.setScene(ForgotPasswordPage.getScene(stage, stage.getScene()))
         );
 
         // ---------------- Log In Button ----------------
         Button loginBtn = new Button("Log In");
-        loginBtn.setPrefWidth(200);
-        loginBtn.setStyle("-fx-background-color: #006633; -fx-text-fill: white;");
+        loginBtn.setPrefWidth(220);
+        loginBtn.getStyleClass().add("primary-btn");
 
         loginBtn.setOnAction(e -> {
             String email = usernameField.getText().trim();
@@ -99,9 +104,9 @@ public class LoginPage extends Application {
         });
 
         // ---------------- Register Button ----------------
-        Button registerBtn = new Button("Register");
-        registerBtn.setPrefWidth(200);
-        registerBtn.setStyle("-fx-background-color: #004d26; -fx-text-fill: white;");
+        Button registerBtn = new Button("Create Account");
+        registerBtn.setPrefWidth(220);
+        registerBtn.getStyleClass().add("secondary-btn");
         registerBtn.setOnAction(e ->
                 stage.setScene(RegisterPage.getScene(stage, stage.getScene()))
         );
@@ -111,7 +116,7 @@ public class LoginPage extends Application {
         try {
             Image img = new Image("/googleicon.png");
             googleIcon = new ImageView(img);
-            googleIcon.setFitHeight(20);
+            googleIcon.setFitHeight(18);
             googleIcon.setPreserveRatio(true);
         } catch (Exception e) {
             System.out.println("Could not load Google icon.");
@@ -120,14 +125,10 @@ public class LoginPage extends Application {
         Button googleBtn = new Button("Sign in with Google");
         if (googleIcon != null) {
             googleBtn.setGraphic(googleIcon);
-            googleBtn.setContentDisplay(ContentDisplay.LEFT);
+            googleBtn.setContentDisplay(javafx.scene.control.ContentDisplay.LEFT);
         }
-        googleBtn.setStyle(
-                "-fx-background-color: white;" +
-                        "-fx-border-color: #dcdcdc;" +
-                        "-fx-text-fill: #4285F4;" +
-                        "-fx-font-weight: bold;"
-        );
+        googleBtn.setPrefWidth(220);
+        googleBtn.getStyleClass().add("google-btn");
         googleBtn.setOnAction(e ->
                 stage.setScene(GoogleLogin.getScene(stage, stage.getScene()))
         );
@@ -135,11 +136,8 @@ public class LoginPage extends Application {
         HBox googleBox = new HBox(googleBtn);
         googleBox.setAlignment(Pos.CENTER);
 
-        // ---------------- Add all elements ----------------
-        if (logoView != null) root.getChildren().add(logoView);
-
-        root.getChildren().addAll(
-                titleLabel,
+        // ---------------- Layout groups ----------------
+        VBox formBox = new VBox(10,
                 usernameField,
                 passwordField,
                 forgotPass,
@@ -147,8 +145,19 @@ public class LoginPage extends Application {
                 registerBtn,
                 googleBox
         );
+        formBox.setAlignment(Pos.CENTER);
 
-        return new Scene(root, 380, 580);
+        if (logoView != null) root.getChildren().add(logoView);
+        root.getChildren().addAll(titleLabel, formBox);
+
+        Scene scene = new Scene(root, 420, 640);
+
+        // Attach CSS
+        scene.getStylesheets().add(
+                LoginPage.class.getResource("/ramifylogin.css").toExternalForm()
+        );
+
+        return scene;
     }
 
     public static void main(String[] args) {
