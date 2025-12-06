@@ -10,6 +10,48 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
+          <root url="file://$USER_HOME$/Downloads/zulu21.46.19-ca-jdk21.0.9-macosx_x64/zulu-21.jdk/Contents/Home/lib" />
+        </CLASSES>
+        <JAVADOC />
+        <NATIVE>
+          <root url="file://$USER_HOME$/Downloads/zulu21.46.19-ca-jdk21.0.9-macosx_x64/zulu-21.jdk/Contents/Home/lib" />
+        </NATIVE>
+        <SOURCES>
+          <root url="file://$USER_HOME$/Downloads/zulu21.46.19-ca-jdk21.0.9-macosx_x64/zulu-21.jdk/Contents/Home/lib" />
+        </SOURCES>
+        <jarDirectory url="file://$USER_HOME$/Downloads/zulu21.46.19-ca-jdk21.0.9-macosx_x64/zulu-21.jdk/Contents/Home/lib" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/Downloads/zulu21.46.19-ca-jdk21.0.9-macosx_x64/zulu-21.jdk/Contents/Home/lib" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$USER_HOME$/Downloads/zulu21.46.19-ca-jdk21.0.9-macosx_x64/zulu-21.jdk/Contents/Home/lib" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$USER_HOME$/Downloads/zulu21.46.19-ca-jdk21.0.9-macosx_x64/zulu-21.jdk/Contents/Home/lib" />
+        </SOURCES>
+        <jarDirectory url="file://$USER_HOME$/Downloads/zulu21.46.19-ca-jdk21.0.9-macosx_x64/zulu-21.jdk/Contents/Home/lib" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/Downloads/zulu21.46.19-ca-jdk21.0.9-macosx_x64/zulu-21.jdk/Contents/Home/lib" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$USER_HOME$/Downloads/javafx-sdk-21.0.9/lib" />
+        </CLASSES>
+        <JAVADOC />
+        <NATIVE>
+          <root url="file://$USER_HOME$/Downloads/javafx-sdk-21.0.9/lib" />
+        </NATIVE>
+        <SOURCES />
+        <jarDirectory url="file://$USER_HOME$/Downloads/javafx-sdk-21.0.9/lib" recursive="false" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
           <root url="file://$USER_HOME$/Downloads/openjfx-21.0.9_windows-x64_bin-sdk/javafx-sdk-21.0.9/lib" />
         </CLASSES>
         <JAVADOC />

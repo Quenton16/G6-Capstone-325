@@ -142,7 +142,7 @@ public class DashboardPage {
         releaseNotes.setOnMouseClicked(e ->
                 openInApp(stage, "https://www.farmingdale.edu", "Release Notes"));
         privacy.setOnMouseClicked(e ->
-                openInApp(stage, "https://www.farmingdale.edu", "Privacy"));
+                openInApp(stage, "https://farmingdale.campuslabs.com/engage/privacy", "Privacy"));
 
         ImageView sideLogo = null;
         try {
