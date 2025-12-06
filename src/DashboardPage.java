@@ -1,5 +1,6 @@
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -9,10 +10,18 @@ import javafx.stage.Stage;
 
 public class DashboardPage {
 
+    private static void openLink(String url) {
+        try {
+            java.awt.Desktop.getDesktop().browse(new java.net.URI(url));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static Scene getScene(Stage stage, Scene previousScene) {
 
         // ============================================================
-        // HEADER (fixed at top)
+        // HEADER
         // ============================================================
         Button hamburgerBtn = new Button("☰");
         hamburgerBtn.setStyle("-fx-background-color: transparent; -fx-font-size: 22px; -fx-cursor: hand;");
@@ -61,41 +70,78 @@ public class DashboardPage {
         header.setStyle("-fx-background-color: #ffffff; -fx-border-color: #dddddd; -fx-border-width: 0 0 1 0;");
 
         // ============================================================
-        // SIDE MENU (overlay)
+        // SIDEBAR
         // ============================================================
-        VBox sideMenu = new VBox(15);
+        VBox sideMenu = new VBox(20);
         sideMenu.setPadding(new Insets(20));
         sideMenu.setAlignment(Pos.TOP_LEFT);
-        sideMenu.setStyle("-fx-background-color: #e8e8e8;");
+        sideMenu.setStyle("-fx-background-color: #0b5e2a;");
         sideMenu.setPrefWidth(200);
         sideMenu.setVisible(false);
 
-        // Add close button at top
         Button closeMenuBtn = new Button("×");
-        closeMenuBtn.setStyle("-fx-background-color: transparent; -fx-font-size: 25px;");
+        closeMenuBtn.setStyle("-fx-background-color: transparent; -fx-font-size: 28px; -fx-text-fill: white;");
         closeMenuBtn.setOnAction(e -> sideMenu.setVisible(false));
-        sideMenu.getChildren().add(closeMenuBtn);
 
-        Button menu1 = new Button("Home");
-        Button menu2 = new Button("Profile");
-        Button menu3 = new Button("Shuttle");
-        Button menu4 = new Button("Settings");
-        Button menu5 = new Button("Logout");
+        Label academicCalendar = new Label("Academic Calendar");
+        Label fscShuttle = new Label("FSC Shuttle");
+        Label instagram = new Label("OSA Instagram");
+        Label osaManual = new Label("OSA Manual");
+        Label careers = new Label("Careers & Internships");
+        Label releaseNotes = new Label("Release Notes");
+        Label privacy = new Label("Privacy");
 
-        for (Button b : new Button[]{menu1, menu2, menu3, menu4, menu5}) {
-            b.setMaxWidth(Double.MAX_VALUE);
-            b.setStyle("-fx-background-color: transparent; -fx-font-size: 16px;");
+        Label[] links = {
+                academicCalendar, fscShuttle, instagram, osaManual,
+                careers, releaseNotes, privacy
+        };
+
+        for (Label lbl : links) {
+            lbl.setStyle("-fx-font-size: 17px; -fx-text-fill: white;");
+            lbl.setCursor(Cursor.HAND);
         }
-        sideMenu.getChildren().addAll(menu1, menu2, menu3, menu4, menu5);
+
+        academicCalendar.setOnMouseClicked(e -> openLink("https://www.farmingdale.edu/calendar/academic/"));
+        fscShuttle.setOnMouseClicked(e -> openLink("https://www.farmingdale.edu/shuttle/"));
+        instagram.setOnMouseClicked(e -> openLink("https://www.instagram.com/farmingdalestudentactivities/"));
+        osaManual.setOnMouseClicked(e -> openLink("https://www.farmingdale.edu/student-activities/"));
+        careers.setOnMouseClicked(e -> openLink("https://www.farmingdale.edu/nexus-center/"));
+        releaseNotes.setOnMouseClicked(e -> openLink("https://www.farmingdale.edu"));
+        privacy.setOnMouseClicked(e -> openLink("https://www.farmingdale.edu"));
+
+        ImageView sideLogo = null;
+        try {
+            sideLogo = new ImageView(new Image("/logosidebar.jpg"));
+            sideLogo.setFitWidth(150);
+            sideLogo.setPreserveRatio(true);
+        } catch (Exception ignored) {}
+
+        HBox logoBox = new HBox();
+        logoBox.setAlignment(Pos.BOTTOM_RIGHT);
+        if (sideLogo != null) logoBox.getChildren().add(sideLogo);
+        logoBox.setPadding(new Insets(20, 10, 10, 10));
+
+        VBox.setVgrow(logoBox, Priority.ALWAYS);
+
+        sideMenu.getChildren().addAll(
+                closeMenuBtn,
+                academicCalendar,
+                fscShuttle,
+                instagram,
+                osaManual,
+                careers,
+                releaseNotes,
+                privacy,
+                logoBox
+        );
 
         // ============================================================
-        // DASHBOARD CONTENT
+        // MAIN CONTENT
         // ============================================================
         VBox contentRoot = new VBox(20);
         contentRoot.setAlignment(Pos.TOP_CENTER);
         contentRoot.setPadding(new Insets(20));
 
-        // Logo + Welcome
         ImageView logoView = null;
         try {
             logoView = new ImageView(new Image("/ramify_logo.png"));
@@ -109,7 +155,6 @@ public class DashboardPage {
         if (logoView != null) contentRoot.getChildren().add(logoView);
         contentRoot.getChildren().add(welcomeLabel);
 
-        // Search bar
         HBox searchBox = new HBox();
         searchBox.setAlignment(Pos.CENTER);
         TextField searchField = new TextField();
@@ -118,7 +163,6 @@ public class DashboardPage {
         searchField.setStyle("-fx-background-radius: 20; -fx-padding: 8 15;");
         searchBox.getChildren().add(searchField);
 
-        // Upcoming Events
         Label upcomingLabel = new Label("Upcoming Events");
         upcomingLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
@@ -126,7 +170,6 @@ public class DashboardPage {
         try { flyerImage.setImage(new Image("/Ramchella.png")); } catch (Exception ignored) {}
         flyerImage.setFitWidth(380);
         flyerImage.setFitHeight(120);
-        flyerImage.setPreserveRatio(false);
 
         Button flyerButton = new Button();
         flyerButton.setGraphic(flyerImage);
@@ -142,7 +185,9 @@ public class DashboardPage {
         VBox upcomingBox = new VBox(10, upcomingLabel, flyerButton);
         upcomingBox.setAlignment(Pos.CENTER);
 
-        // Clubs Section
+        // ============================================================
+        // CLUBS FOR YOU
+        // ============================================================
         HBox clubsHeader = new HBox();
         clubsHeader.setAlignment(Pos.CENTER);
         clubsHeader.setSpacing(160);
@@ -187,16 +232,28 @@ public class DashboardPage {
         VBox clubsSection = new VBox(10, clubsHeader, clubsRow);
         clubsSection.setAlignment(Pos.CENTER);
 
-        // You May Like Section
+        // ============================================================
+        // YOU MAY LIKE
+        // ============================================================
         Label likeLabel = new Label("You May Like");
         likeLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-        VBox likeList = new VBox(15);
-        likeList.setAlignment(Pos.CENTER);
+        VBox likeList = new VBox(20);
+        likeList.setAlignment(Pos.TOP_LEFT);
+        likeList.setPadding(new Insets(0, 0, 0, 20));
 
-        String[] eventNames = { "Winter Tournament @ 3-6 PM on 12/1", "Chips 'N' Dip @ 11 AM - 12 PM on 12/2" };
-        String[] eventClubs = { "Farmingdale Cricket Club", "Cooks 'N' Crooks" };
-        String[] eventImages = { "/cricketclublogo.jpg", "/cooksandcrookslogo.jpg" };
+        String[] eventNames = {
+                "Winter Tournament @ 3-6 PM on 12/1",
+                "Chips 'N' Dip @ 11 AM - 12 PM on 12/2"
+        };
+        String[] eventClubs = {
+                "Farmingdale Cricket Club",
+                "Cooks 'N' Crooks"
+        };
+        String[] eventImages = {
+                "/cricketclublogo.jpg",
+                "/cooksandcrookslogo.jpg"
+        };
 
         for (int i = 0; i < 2; i++) {
             ImageView eventImg = new ImageView(new Image(eventImages[i]));
@@ -214,30 +271,25 @@ public class DashboardPage {
             textCol.setAlignment(Pos.CENTER_LEFT);
 
             HBox eventRow = new HBox(15, eventImg, textCol);
-            eventRow.setAlignment(Pos.CENTER);
+            eventRow.setAlignment(Pos.CENTER_LEFT);
 
             likeList.getChildren().add(eventRow);
         }
 
-        VBox dashboardSection = new VBox(20, searchBox, upcomingBox, clubsSection, likeLabel, likeList);
-        dashboardSection.setAlignment(Pos.CENTER);
+        VBox dashboardSection = new VBox(20,
+                searchBox, upcomingBox, clubsSection,
+                likeLabel, likeList
+        );
+
+        dashboardSection.setAlignment(Pos.TOP_LEFT);
+
         contentRoot.getChildren().add(dashboardSection);
 
-        // ============================================================
-        // SCROLLABLE CONTENT
-        // ============================================================
         ScrollPane scrollPane = new ScrollPane(contentRoot);
         scrollPane.setFitToWidth(true);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        // ============================================================
-        // TRANSPARENT OVERLAY FOR CLICK-TO-CLOSE SIDE MENU
-        // ============================================================
         Pane overlay = new Pane();
-        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.0);"); // fully transparent
         overlay.setVisible(false);
-        overlay.setPickOnBounds(true);
         overlay.setOnMouseClicked(e -> {
             sideMenu.setVisible(false);
             overlay.setVisible(false);
@@ -249,14 +301,15 @@ public class DashboardPage {
             overlay.setVisible(showing);
         });
 
-        // ============================================================
-        // FINAL STACK
-        // ============================================================
+        Scene scene = new Scene(new StackPane(), 450, 650);
+
         StackPane stack = new StackPane();
         VBox mainLayout = new VBox(header, scrollPane);
         stack.getChildren().addAll(mainLayout, overlay, sideMenu);
-        StackPane.setAlignment(sideMenu, Pos.CENTER_LEFT);
 
-        return new Scene(stack, 450, 650);
+        StackPane.setAlignment(sideMenu, Pos.TOP_LEFT);
+
+        scene.setRoot(stack);
+        return scene;
     }
 }
