@@ -113,10 +113,11 @@ public class DashboardPage {
         Label careers = new Label("Careers & Internships");
         Label releaseNotes = new Label("Release Notes");
         Label privacy = new Label("Privacy");
+        Label heatmapLink = new Label("Campus Heatmap");  // NEW
 
         Label[] links = {
                 academicCalendar, fscShuttle, instagram, osaManual,
-                careers, releaseNotes, privacy
+                careers, releaseNotes, privacy, heatmapLink
         };
 
         for (Label lbl : links) {
@@ -144,6 +145,11 @@ public class DashboardPage {
         privacy.setOnMouseClicked(e ->
                 openInApp(stage, "https://farmingdale.campuslabs.com/engage/privacy", "Privacy"));
 
+        // NEW: open the JavaFX HeatmapPage screen
+        heatmapLink.setOnMouseClicked(e ->
+                stage.setScene(HeatmapPage.getScene(stage, stage.getScene()))
+        );
+
         ImageView sideLogo = null;
         try {
             sideLogo = new ImageView(new Image("/logosidebar.jpg"));
@@ -167,6 +173,7 @@ public class DashboardPage {
                 careers,
                 releaseNotes,
                 privacy,
+                heatmapLink,   // NEW item in sidebar
                 logoBox
         );
 
@@ -192,9 +199,7 @@ public class DashboardPage {
                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 18, 0.0, 0, 4);
                 """);
 
-        // ============================================================
         // LOGO + WELCOME
-        // ============================================================
         ImageView logoView = null;
         try {
             logoView = new ImageView(new Image("/ramify_logo.png"));
@@ -221,9 +226,7 @@ public class DashboardPage {
         if (logoView != null) headerBox.getChildren().add(logoView);
         headerBox.getChildren().addAll(welcomeLabel, subtitleLabel);
 
-        // ============================================================
         // SEARCH
-        // ============================================================
         HBox searchBox = new HBox();
         searchBox.setAlignment(Pos.CENTER);
         searchBox.setPadding(new Insets(10, 0, 0, 0));
@@ -240,9 +243,7 @@ public class DashboardPage {
                 """);
         searchBox.getChildren().add(searchField);
 
-        // ============================================================
-        // UPCOMING EVENTS SECTION
-        // ============================================================
+        // UPCOMING EVENTS
         VBox upcomingCard = new VBox(10);
         upcomingCard.setAlignment(Pos.TOP_LEFT);
         upcomingCard.setPadding(new Insets(12));
@@ -260,6 +261,13 @@ public class DashboardPage {
                 -fx-font-weight: bold;
                 -fx-text-fill: #23422f;
                 """);
+
+        // Button to open heatmap from the main content as well
+        Button heatmapBtn = new Button("Open Campus Heatmap");
+        heatmapBtn.setStyle("-fx-background-color: #006633; -fx-text-fill: white;");
+        heatmapBtn.setOnAction(e ->
+                stage.setScene(HeatmapPage.getScene(stage, stage.getScene()))
+        );
 
         ImageView flyerImage = new ImageView();
         try {
@@ -280,11 +288,9 @@ public class DashboardPage {
                 -fx-background-radius: 16;
         """);
 
-        upcomingCard.getChildren().addAll(upcomingLabel, flyerButton);
+        upcomingCard.getChildren().addAll(upcomingLabel, flyerButton, heatmapBtn);
 
-        // ============================================================
         // CLUBS FOR YOU
-        // ============================================================
         VBox clubsCard = new VBox(14);
         clubsCard.setAlignment(Pos.TOP_LEFT);
         clubsCard.setPadding(new Insets(12));
@@ -376,9 +382,7 @@ public class DashboardPage {
 
         clubsCard.getChildren().addAll(clubsHeader, clubsRow);
 
-        // ============================================================
         // YOU MAY LIKE
-        // ============================================================
         VBox likeCard = new VBox(14);
         likeCard.setAlignment(Pos.TOP_LEFT);
         likeCard.setPadding(new Insets(12));
@@ -459,9 +463,7 @@ public class DashboardPage {
 
         likeCard.getChildren().addAll(likeLabel, likeList);
 
-        // ============================================================
         // COMPOSE DASHBOARD CARD
-        // ============================================================
         dashboardCard.getChildren().addAll(
                 headerBox,
                 searchBox,
@@ -477,9 +479,7 @@ public class DashboardPage {
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setStyle("-fx-background-color: transparent;");
 
-        // ============================================================
         // OVERLAY + SIDEMENU TOGGLE
-        // ============================================================
         Pane overlay = new Pane();
         overlay.setVisible(false);
         overlay.setStyle("-fx-background-color: rgba(0,0,0,0.25);");
