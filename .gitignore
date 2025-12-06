@@ -26,5 +26,9 @@ bin/
 ### VS Code ###
 .vscode/
 
+### Sensitive Files ###
+ramify-key.json
+*.env
+
 ### Mac OS ###
 .DS_Store
