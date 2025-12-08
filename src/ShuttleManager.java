@@ -1,5 +1,3 @@
-package com.ramify;
-
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Firestore;
 import java.util.*;

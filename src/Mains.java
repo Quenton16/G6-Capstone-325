@@ -1,5 +1,3 @@
-package com.ramify;
-
 import java.util.*;
 
 /**
