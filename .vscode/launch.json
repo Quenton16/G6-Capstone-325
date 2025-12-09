@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run RamifyApp",
+            "request": "launch",
+            "mainClass": "RamifyApp",
+            "projectName": "ramify-firebase-managers",
+            "vmArgs": "--module-path \"${env:PATH_TO_FX}\" --add-modules javafx.controls,javafx.fxml"
+        },
+        {
+            "type": "java",
+            "name": "Run Mains (Demo)",
+            "request": "launch",
+            "mainClass": "Mains",
+            "projectName": "ramify-firebase-managers"
+        }
+    ]
+}
