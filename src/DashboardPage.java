@@ -10,8 +10,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 public class DashboardPage {
+    
+    private static ClubManager clubManager = new ClubManager();
+    private static EventManager eventManager = new EventManager();
 
     // Helper: open URL inside the app using WebViewPage
     private static void openInApp(Stage stage, String url, String title) {
@@ -108,16 +114,18 @@ public class DashboardPage {
 
         Label academicCalendar = new Label("Academic Calendar");
         Label fscShuttle = new Label("FSC Shuttle");
+        Label shuttleTracking = new Label("Shuttle Tracking");  // NEW
         Label instagram = new Label("OSA Instagram");
         Label osaManual = new Label("OSA Manual");
         Label careers = new Label("Careers & Internships");
         Label releaseNotes = new Label("Release Notes");
         Label privacy = new Label("Privacy");
-        Label heatmapLink = new Label("Campus Heatmap");  // NEW
+        Label heatmapLink = new Label("Campus Heatmap");
+        Label adminLink = new Label("Admin Panel");  // NEW
 
         Label[] links = {
-                academicCalendar, fscShuttle, instagram, osaManual,
-                careers, releaseNotes, privacy, heatmapLink
+                academicCalendar, fscShuttle, shuttleTracking, instagram, osaManual,
+                careers, releaseNotes, privacy, heatmapLink, adminLink
         };
 
         for (Label lbl : links) {
@@ -134,6 +142,8 @@ public class DashboardPage {
                 openInApp(stage, "https://www.farmingdale.edu/calendar/academic/", "Academic Calendar"));
         fscShuttle.setOnMouseClicked(e ->
                 openInApp(stage, "https://www.farmingdale.edu/shuttle/", "FSC Shuttle"));
+        shuttleTracking.setOnMouseClicked(e ->
+                stage.setScene(ShuttleTrackingPage.getScene(stage, stage.getScene())));
         instagram.setOnMouseClicked(e ->
                 openInApp(stage, "https://www.instagram.com/farmingdalestudentactivities/", "OSA Instagram"));
         osaManual.setOnMouseClicked(e ->
@@ -148,6 +158,11 @@ public class DashboardPage {
         // NEW: open the JavaFX HeatmapPage screen
         heatmapLink.setOnMouseClicked(e ->
                 stage.setScene(HeatmapPage.getScene(stage, stage.getScene()))
+        );
+        
+        // NEW: open the Admin Panel
+        adminLink.setOnMouseClicked(e ->
+                stage.setScene(AdminPage.getScene(stage, stage.getScene()))
         );
 
         ImageView sideLogo = null;
@@ -168,12 +183,14 @@ public class DashboardPage {
                 closeMenuBtn,
                 academicCalendar,
                 fscShuttle,
+                shuttleTracking,
                 instagram,
                 osaManual,
                 careers,
                 releaseNotes,
                 privacy,
-                heatmapLink,   // NEW item in sidebar
+                heatmapLink,
+                adminLink,
                 logoBox
         );
 
@@ -325,23 +342,41 @@ public class DashboardPage {
                 """);
 
         clubsHeader.getChildren().addAll(clubsLabel, clubsSpacer, viewMoreBtn);
+        
+        // Add "View All Clubs" button action
+        viewMoreBtn.setOnAction(e -> stage.setScene(ClubsPage.getScene(stage, stage.getScene())));
 
         HBox clubsRow = new HBox(18);
         clubsRow.setAlignment(Pos.CENTER);
 
-        String[] clubImages = { "/cooksandcrookslogo.jpg", "/cricketclublogo.jpg", "/esportsicon.png" };
-        String[] clubNames = { "Cooks 'N' Crooks", "Farmingdale Cricket Club", "Esports Club" };
-
-        String[] clubUrls = {
-                "https://farmingdale.campuslabs.com/engage/organization/cooks",
-                "https://farmingdale.campuslabs.com/engage/organization/cricket",
-                "https://farmingdale.campuslabs.com/engage/organization/farmingdale-esports"
-        };
-
-        for (int i = 0; i < 3; i++) {
-            ImageView clubImage = new ImageView(new Image(clubImages[i]));
-            clubImage.setFitWidth(70);
-            clubImage.setFitHeight(70);
+        // Load real clubs from Firebase
+        Map<String, Map<String, Object>> allClubs = clubManager.getAllClubs();
+        List<Map.Entry<String, Map<String, Object>>> clubList = new ArrayList<>(allClubs.entrySet());
+        
+        // Display up to 3 clubs
+        int clubCount = Math.min(3, clubList.size());
+        for (int i = 0; i < clubCount; i++) {
+            Map.Entry<String, Map<String, Object>> entry = clubList.get(i);
+            String clubId = entry.getKey();
+            Map<String, Object> clubData = entry.getValue();
+            
+            String clubName = (String) clubData.getOrDefault("name", "Unknown Club");
+            String clubCategory = (String) clubData.getOrDefault("category", "General");
+            
+            // Use default images based on index (fallback)
+            String[] defaultImages = { "/cooksandcrookslogo.jpg", "/cricketclublogo.jpg", "/esportsicon.png" };
+            String imagePath = i < defaultImages.length ? defaultImages[i] : "/ramify_logo.png";
+            
+            ImageView clubImage = new ImageView();
+            try {
+                clubImage.setImage(new Image(imagePath));
+                clubImage.setFitWidth(70);
+                clubImage.setFitHeight(70);
+            } catch (Exception e) {
+                // Image not found, use placeholder
+                clubImage.setFitWidth(70);
+                clubImage.setFitHeight(70);
+            }
 
             Button clubBtn = new Button();
             clubBtn.setGraphic(clubImage);
@@ -354,11 +389,11 @@ public class DashboardPage {
                     -fx-border-radius: 40;
             """);
 
-            final String clubName = clubNames[i];
-            final String clubUrl = clubUrls[i];
-
-            clubBtn.setOnAction(e ->
-                    openInApp(stage, clubUrl, clubName)
+            final String finalClubId = clubId;
+            final String finalClubName = clubName;
+            
+            clubBtn.setOnAction(e -> 
+                    stage.setScene(ClubDetailsPage.getScene(stage, stage.getScene(), finalClubId))
             );
 
             Button seeDetailsBtn = new Button("See Details");
@@ -369,15 +404,24 @@ public class DashboardPage {
                     -fx-font-weight: bold;
                     """);
             seeDetailsBtn.setOnAction(e ->
-                    openInApp(stage, clubUrl, clubName)
+                    stage.setScene(ClubDetailsPage.getScene(stage, stage.getScene(), finalClubId))
             );
 
-            Label clubNameLabel = new Label(clubNames[i]);
+            Label clubNameLabel = new Label(clubName);
             clubNameLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #2d3a33;");
+            clubNameLabel.setMaxWidth(90);
+            clubNameLabel.setWrapText(true);
 
             VBox clubBox = new VBox(5, clubBtn, clubNameLabel, seeDetailsBtn);
             clubBox.setAlignment(Pos.CENTER);
             clubsRow.getChildren().add(clubBox);
+        }
+        
+        // If no clubs exist, show placeholder message
+        if (clubCount == 0) {
+            Label noClubsLabel = new Label("No clubs available yet. Check back soon!");
+            noClubsLabel.setStyle("-fx-text-fill: #666; -fx-font-style: italic;");
+            clubsRow.getChildren().add(noClubsLabel);
         }
 
         clubsCard.getChildren().addAll(clubsHeader, clubsRow);
@@ -404,37 +448,54 @@ public class DashboardPage {
         VBox likeList = new VBox(16);
         likeList.setAlignment(Pos.TOP_LEFT);
 
-        String[] eventNames = {
-                "Winter Tournament @ 3-6 PM on 12/1",
-                "Chips 'N' Dip @ 11 AM - 12 PM on 12/2"
-        };
-        String[] eventClubs = {
-                "Farmingdale Cricket Club",
-                "Cooks 'N' Crooks"
-        };
-        String[] eventImages = {
-                "/cricketclublogo.jpg",
-                "/cooksandcrookslogo.jpg"
-        };
+        // Load real events from Firebase
+        Map<String, Map<String, Object>> allEvents = eventManager.getAllEvents();
+        List<Map.Entry<String, Map<String, Object>>> eventList = new ArrayList<>(allEvents.entrySet());
+        
+        // Display up to 2 events
+        int eventCount = Math.min(2, eventList.size());
+        for (int i = 0; i < eventCount; i++) {
+            Map.Entry<String, Map<String, Object>> entry = eventList.get(i);
+            String eventId = entry.getKey();
+            Map<String, Object> eventData = entry.getValue();
+            
+            String eventName = (String) eventData.getOrDefault("name", "Unknown Event");
+            String eventLocation = (String) eventData.getOrDefault("location", "TBD");
+            String clubId = (String) eventData.getOrDefault("clubId", "");
+            
+            // Get club name for this event
+            String clubName = "Unknown Club";
+            if (!clubId.isEmpty()) {
+                Map<String, Object> club = clubManager.getClub(clubId);
+                if (club != null) {
+                    clubName = (String) club.getOrDefault("name", "Unknown Club");
+                }
+            }
+            
+            // Use default images as fallback
+            String[] defaultImages = { "/cricketclublogo.jpg", "/cooksandcrookslogo.jpg" };
+            String imagePath = i < defaultImages.length ? defaultImages[i] : "/ramify_logo.png";
+            
+            ImageView eventImg = null;
+            try {
+                eventImg = new ImageView(new Image(imagePath));
+                eventImg.setFitWidth(55);
+                eventImg.setFitHeight(55);
+            } catch (Exception e) {
+                eventImg = new ImageView();
+                eventImg.setFitWidth(55);
+                eventImg.setFitHeight(55);
+            }
 
-        String[] eventUrls = {
-                clubUrls[1],
-                clubUrls[0]
-        };
-
-        for (int i = 0; i < 2; i++) {
-            ImageView eventImg = new ImageView(new Image(eventImages[i]));
-            eventImg.setFitWidth(55);
-            eventImg.setFitHeight(55);
-
-            Label eventLabel = new Label(eventNames[i]);
+            Label eventLabel = new Label(eventName);
             eventLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #26332b;");
+            eventLabel.setMaxWidth(250);
+            eventLabel.setWrapText(true);
 
-            Label clubLabel = new Label(eventClubs[i]);
+            Label clubLabel = new Label(clubName + " • " + eventLocation);
             clubLabel.setStyle("-fx-text-fill: #5f6e64; -fx-font-size: 11px;");
 
-            final String eventUrl = eventUrls[i];
-            final String eventTitle = eventNames[i];
+            final String finalEventId = eventId;
 
             Button detailBtn = new Button("> See Details");
             detailBtn.setStyle("""
@@ -444,7 +505,7 @@ public class DashboardPage {
                     -fx-font-weight: bold;
                     """);
             detailBtn.setOnAction(e ->
-                    openInApp(stage, eventUrl, eventTitle)
+                    stage.setScene(EventDetailsPage.getScene(stage, stage.getScene(), finalEventId))
             );
 
             VBox textCol = new VBox(4, eventLabel, clubLabel, detailBtn);
@@ -459,6 +520,13 @@ public class DashboardPage {
                     """);
 
             likeList.getChildren().add(eventRow);
+        }
+        
+        // If no events exist, show placeholder
+        if (eventCount == 0) {
+            Label noEventsLabel = new Label("No upcoming events at this time.");
+            noEventsLabel.setStyle("-fx-text-fill: #666; -fx-font-style: italic; -fx-padding: 10;");
+            likeList.getChildren().add(noEventsLabel);
         }
 
         likeCard.getChildren().addAll(likeLabel, likeList);

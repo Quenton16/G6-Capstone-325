@@ -13,21 +13,22 @@ public class EventManager {
         this.db = FirebaseConnection.getFirestore();
     }
     
-    // Add a new event
+    // Add a new event with category
     public String addEvent(String eventName, String description, String clubId, 
                           Date startDateTime, Date endDateTime, String location, 
-                          int maxCapacity) {
+                          int maxCapacity, String category) {
         try {
             Map<String, Object> eventData = new HashMap<>();
-            eventData.put("eventName", eventName);
+            eventData.put("name", eventName);
             eventData.put("description", description);
             eventData.put("clubId", clubId);
-            eventData.put("startDateTime", Timestamp.of(startDateTime));
-            eventData.put("endDateTime", Timestamp.of(endDateTime));
+            eventData.put("startDate", Timestamp.of(startDateTime));
+            eventData.put("endDate", Timestamp.of(endDateTime));
             eventData.put("location", location);
-            eventData.put("maxCapacity", maxCapacity);
+            eventData.put("maxAttendees", maxCapacity);
+            eventData.put("category", category);
             eventData.put("currentAttendees", 0);
-            eventData.put("status", "UPCOMING"); // UPCOMING, ONGOING, COMPLETED, CANCELLED
+            eventData.put("status", "UPCOMING");
             eventData.put("createdAt", Timestamp.now());
             
             DocumentReference docRef = db.collection("events").document();
@@ -39,6 +40,13 @@ public class EventManager {
             System.err.println("Error adding event: " + e.getMessage());
             return null;
         }
+    }
+    
+    // Overloaded method for backwards compatibility
+    public String addEvent(String eventName, String description, String clubId, 
+                          Date startDateTime, Date endDateTime, String location, 
+                          int maxCapacity) {
+        return addEvent(eventName, description, clubId, startDateTime, endDateTime, location, maxCapacity, "General");
     }
     
     // Get event by ID

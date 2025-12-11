@@ -12,9 +12,10 @@ public class ShuttleManager {
         this.db = FirebaseConnection.getFirestore();
     }
     
-    // Add a new shuttle
+    // Add a new shuttle with departure times
     public String addShuttle(String routeName, String vehicleNumber, String driverName, 
-                            int capacity, String currentLocation) {
+                            int capacity, String currentLocation, String departsFarmingdale, 
+                            String departsLaffinHall, String departsAviationCenter) {
         try {
             Map<String, Object> shuttleData = new HashMap<>();
             shuttleData.put("routeName", routeName);
@@ -22,8 +23,11 @@ public class ShuttleManager {
             shuttleData.put("driverName", driverName);
             shuttleData.put("capacity", capacity);
             shuttleData.put("currentPassengers", 0);
-            shuttleData.put("status", "AVAILABLE"); // AVAILABLE, IN_TRANSIT, MAINTENANCE, OUT_OF_SERVICE
+            shuttleData.put("status", "AVAILABLE");
             shuttleData.put("currentLocation", currentLocation);
+            shuttleData.put("departsFarmingdale", departsFarmingdale);
+            shuttleData.put("departsLaffinHall", departsLaffinHall);
+            shuttleData.put("departsAviationCenter", departsAviationCenter);
             
             DocumentReference docRef = db.collection("shuttles").document();
             docRef.set(shuttleData).get();
@@ -34,6 +38,12 @@ public class ShuttleManager {
             System.err.println("Error adding shuttle: " + e.getMessage());
             return null;
         }
+    }
+    
+    // Overloaded method for backwards compatibility
+    public String addShuttle(String routeName, String vehicleNumber, String driverName, 
+                            int capacity, String currentLocation) {
+        return addShuttle(routeName, vehicleNumber, driverName, capacity, currentLocation, "", "", "");
     }
     
     // Get shuttle by ID
