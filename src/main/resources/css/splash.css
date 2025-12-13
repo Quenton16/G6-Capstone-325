@@ -1,0 +1,29 @@
+/* Root background */
+.splash-root {
+    -fx-background-color: linear-gradient(to bottom, #003b1f, #0b5e2a, #f3f5e1);
+}
+
+/* Centered content */
+.splash-content {
+    -fx-alignment: center;
+}
+
+/* Logo styling */
+.splash-logo {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 25, 0.4, 0, 8);
+}
+
+/* Title text */
+.splash-title {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 2px;
+}
+
+/* Subtitle text */
+.splash-subtitle {
+    -fx-text-fill: #e0f2e9;
+    -fx-font-size: 14px;
+    -fx-opacity: 0.9;
+}
