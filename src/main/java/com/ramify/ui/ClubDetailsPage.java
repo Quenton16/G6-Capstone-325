@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
@@ -47,11 +49,49 @@ public class ClubDetailsPage {
             return new Scene(root, 450, 650);
         }
 
-        String clubName = (String) clubData.getOrDefault("name", "Unknown Club");
+        String clubName = (String) clubData.getOrDefault("clubName", "Unknown Club");
         String description = (String) clubData.getOrDefault("description", "No description available.");
         String category = (String) clubData.getOrDefault("category", "General");
-        String contactEmail = (String) clubData.getOrDefault("contactEmail", "N/A");
+        String contactEmail = (String) clubData.getOrDefault("email", "N/A");
         String presidentId = (String) clubData.getOrDefault("presidentId", "N/A");
+
+        // Club Image - Smart matching based on club name
+        ImageView clubImageView = null;
+        try {
+            String imagePath = "/images/ramify_logo.png"; // default
+            String lowerName = clubName.toLowerCase();
+            
+            // Match specific club names to their images
+            if (lowerName.contains("fashion")) {
+                imagePath = "/images/Fashion Club.jpg";
+            } else if (lowerName.contains("film") || lowerName.contains("movie")) {
+                imagePath = "/images/Film Club.jpg";
+            } else if (lowerName.contains("gaming") || lowerName.contains("game")) {
+                imagePath = "/images/Gaming Club.jpg";
+            } else if (lowerName.contains("horticulture") || lowerName.contains("garden")) {
+                imagePath = "/images/Horticulture Club.jpg";
+            } else if (lowerName.contains("motorsport") || lowerName.contains("motor") || lowerName.contains("racing")) {
+                imagePath = "/images/Ram Motorsports Club.jpg";
+            } else if (lowerName.contains("rock climbing") || lowerName.contains("climbing")) {
+                imagePath = "/images/Rocking Climbing Club.jpg";
+            } else if (lowerName.contains("cook") || lowerName.contains("crook") || lowerName.contains("culinary")) {
+                imagePath = "/images/cooksandcrookslogo.jpg";
+            } else if (lowerName.contains("cricket") || lowerName.contains("sport")) {
+                imagePath = "/images/Cricketclublogo.jpg";
+            } else if (lowerName.contains("esport") || lowerName.contains("e-sport")) {
+                imagePath = "/images/EsportsIcon.png";
+            } else if (lowerName.contains("music") || lowerName.contains("concert") || lowerName.contains("ramchella")) {
+                imagePath = "/images/Ramchella.png";
+            }
+            
+            clubImageView = new ImageView(new Image(imagePath));
+            clubImageView.setFitWidth(120);
+            clubImageView.setFitHeight(120);
+            clubImageView.setPreserveRatio(true);
+            clubImageView.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0.0, 0, 2);");
+        } catch (Exception e) {
+            // Image not found
+        }
 
         // Club Info Card
         VBox infoCard = new VBox(15);
@@ -100,6 +140,13 @@ public class ClubDetailsPage {
                 -fx-text-fill: #666;
                 """);
 
+        if (clubImageView != null) {
+            VBox imageBox = new VBox(clubImageView);
+            imageBox.setAlignment(Pos.CENTER);
+            imageBox.setPadding(new Insets(0, 0, 10, 0));
+            infoCard.getChildren().add(imageBox);
+        }
+        
         infoCard.getChildren().addAll(nameLabel, categoryLabel, descLabel, emailLabel, presidentLabel);
 
         ScrollPane scrollPane = new ScrollPane();

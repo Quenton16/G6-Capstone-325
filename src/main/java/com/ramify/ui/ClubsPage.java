@@ -57,7 +57,7 @@ public class ClubsPage {
                 String clubId = entry.getKey();
                 Map<String, Object> clubData = entry.getValue();
 
-                String clubName = (String) clubData.getOrDefault("name", "Unknown Club");
+                String clubName = (String) clubData.getOrDefault("clubName", "Unknown Club");
                 String category = (String) clubData.getOrDefault("category", "General");
                 String description = (String) clubData.getOrDefault("description", "");
 

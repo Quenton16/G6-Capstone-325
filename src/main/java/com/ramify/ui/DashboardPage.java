@@ -364,12 +364,34 @@ public class DashboardPage {
             String clubId = entry.getKey();
             Map<String, Object> clubData = entry.getValue();
             
-            String clubName = (String) clubData.getOrDefault("name", "Unknown Club");
+            String clubName = (String) clubData.getOrDefault("clubName", "Unknown Club");
             String clubCategory = (String) clubData.getOrDefault("category", "General");
             
-            // Use default images based on index (fallback)
-            String[] defaultImages = { "/cooksandcrookslogo.jpg", "/cricketclublogo.jpg", "/esportsicon.png" };
-            String imagePath = i < defaultImages.length ? defaultImages[i] : "/ramify_logo.png";
+            // Smart image matching based on club name
+            String imagePath = "/images/ramify_logo.png"; // default
+            String lowerName = clubName.toLowerCase();
+            
+            if (lowerName.contains("fashion")) {
+                imagePath = "/images/Fashion Club.jpg";
+            } else if (lowerName.contains("film") || lowerName.contains("movie")) {
+                imagePath = "/images/Film Club.jpg";
+            } else if (lowerName.contains("gaming") || lowerName.contains("game")) {
+                imagePath = "/images/Gaming Club.jpg";
+            } else if (lowerName.contains("horticulture") || lowerName.contains("garden")) {
+                imagePath = "/images/Horticulture Club.jpg";
+            } else if (lowerName.contains("motorsport") || lowerName.contains("motor") || lowerName.contains("racing")) {
+                imagePath = "/images/Ram Motorsports Club.jpg";
+            } else if (lowerName.contains("rock climbing") || lowerName.contains("climbing")) {
+                imagePath = "/images/Rocking Climbing Club.jpg";
+            } else if (lowerName.contains("cook") || lowerName.contains("crook") || lowerName.contains("culinary")) {
+                imagePath = "/images/cooksandcrookslogo.jpg";
+            } else if (lowerName.contains("cricket") || lowerName.contains("sport")) {
+                imagePath = "/images/Cricketclublogo.jpg";
+            } else if (lowerName.contains("esport") || lowerName.contains("e-sport")) {
+                imagePath = "/images/EsportsIcon.png";
+            } else if (lowerName.contains("music") || lowerName.contains("concert") || lowerName.contains("ramchella")) {
+                imagePath = "/images/Ramchella.png";
+            }
             
             ImageView clubImage = new ImageView();
             try {
