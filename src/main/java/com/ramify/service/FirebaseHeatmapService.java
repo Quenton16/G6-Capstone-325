@@ -12,7 +12,6 @@ public class FirebaseHeatmapService {
     // base URL of your RTDB (no path, no .json)
     private static final String BASE_URL =
             "https://csclab7325-default-rtdb.firebaseio.com";
-
     /**
      * Returns a map: areaName -> number of responses
      * e.g. "Roosevelt Hall" -> 5

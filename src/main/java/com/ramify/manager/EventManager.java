@@ -10,7 +10,7 @@ import java.util.*;
  * Manages Event information in Firebase
  */
 public class EventManager {
-    private Firestore db;
+    private final Firestore db;
     
     public EventManager() {
         this.db = FirebaseConnection.getFirestore();

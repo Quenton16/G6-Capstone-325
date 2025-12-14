@@ -10,7 +10,7 @@ import java.util.*;
  * Manages Lounge Tracker information in Firebase
  */
 public class LoungeManager {
-    private Firestore db;
+    private final Firestore db;
     
     public LoungeManager() {
         this.db = FirebaseConnection.getFirestore();
